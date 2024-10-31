@@ -7,11 +7,10 @@ from app import mail
 
 
 # generate a verification token
-def generate_verification_token(email, password):
+def generate_verification_token(email):
     payload= {
         'email':email,
-        'password': password,
-        'exp': datetime.now()+ timedelta(hours=24)
+        'exp': datetime.now()+ timedelta(hours=1)
     }
     return jwt.encode(payload, os.getenv('JWT_SECRET_KEY'), algorithm='HS256')
 
