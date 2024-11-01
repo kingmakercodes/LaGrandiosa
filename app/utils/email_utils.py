@@ -14,6 +14,7 @@ def generate_verification_token(email):
     }
     return jwt.encode(payload, os.getenv('JWT_SECRET_KEY'), algorithm='HS256')
 
+
 # send verification email
 def send_verification_email(email, token):
     verification_url= url_for('auth.verify_email', token=token, _external=True)
