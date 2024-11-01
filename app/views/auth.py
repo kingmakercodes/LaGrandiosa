@@ -1,11 +1,12 @@
 import os
-from tkinter.ttk import Label
-
+from datetime import datetime, timezone, timedelta
+import jwt
 from flask import Blueprint, request, jsonify
 import requests
-from app import database, bcrypt
+from app import database
 from app.models.models import User
 from app.utils.email_utils import generate_verification_token, send_verification_email, decode_verification_token
+
 
 auth_blueprint= Blueprint('auth', __name__)
 
@@ -67,3 +68,28 @@ def register():
     database.session.commit()
 
     return jsonify({'message':'User account verified, registration complete!'}), 200
+
+
+# user login route
+@auth_blueprint.route('/login', methods=['POST'])
+def login():
+    data= request.get_json()
+    email= data.get('email')
+    password= data.get('password')
+
+    user= User.query.filter_by(email=email).first()
+    if not user:
+        return jsonify({'message':'Email does not exist!'}), 401
+
+    if not user.check_password(password):
+        return jsonify({'message':'Password incorrect!'}), 401
+
+    # generate token
+    payload= {
+        'user_id': user.id,
+        'exp': datetime.now(timezone.utc)+ timedelta(hours=1)
+        # explicit timezone handling, helpful for applications that might require later integration with timezone aware services
+    }
+    token= jwt.encode(payload, os.getenv('JWT_SECRET_KEY'), algorithm='HS256')
+
+    return jsonify({'token': token}), 200

@@ -1,5 +1,5 @@
 from app import database
-from datetime import datetime
+from datetime import datetime, timezone
 from werkzeug.security import generate_password_hash, check_password_hash
 
 
@@ -10,7 +10,7 @@ class User(database.Model):
     username= database.Column(database.String(80), unique=True, nullable=False)
     email= database.Column(database.String(120), unique=True, nullable=False)
     password_hash= database.Column(database.String(255), nullable=False)
-    created_at= database.Column(database.DateTime, default=datetime.now)
+    created_at= database.Column(database.DateTime, default=datetime.now(timezone.utc))
     is_admin= database.Column(database.Boolean, default=False)
 
     # model relationships
@@ -58,7 +58,7 @@ class Order(database.Model):
     id= database.Column(database.Integer, primary_key=True)
     status= database.Column(database.String(20), default='Pending')
     total_amount= database.Column(database.Float, nullable=False)
-    created_at= database.Column(database.DateTime, default= datetime.now)
+    created_at= database.Column(database.DateTime, default= datetime.now(timezone.utc))
 
     # foreign keys
     user_id= database.Column(database.Integer, database.ForeignKey('users.id'))
@@ -90,7 +90,7 @@ class OrderItem(database.Model):
 class Cart(database.Model):
     __tablename__='carts'
     id= database.Column(database.Integer, primary_key=True)
-    created_at= database.Column(database.DateTime, default=datetime.now)
+    created_at= database.Column(database.DateTime, default=datetime.now(timezone.utc))
 
     # foreign keys
     user_id = database.Column(database.Integer, database.ForeignKey('users.id'))
