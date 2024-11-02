@@ -23,3 +23,8 @@ class MailConfig:
     MAIL_USE_TLS = os.getenv('MAIL_USE_TLS')
     MAIL_USERNAME = os.getenv('MAIL_USERNAME')
     MAIL_PASSWORD = os.getenv('MAIL_PASSWORD')
+
+
+class ReCAPTCHAConfig:
+    RECAPTCHA_SECRET_KEY= os.getenv('RECAPTCHA_SECRET_KEY', 'your_google_recaptcha_secret_key')
+    RECAPTCHA_VERIFICATION_URL= os.getenv('https://www.google.com/recaptcha/api/siteverify')

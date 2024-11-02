@@ -3,9 +3,9 @@ from datetime import datetime, timezone, timedelta
 import jwt
 from flask import Blueprint, request, jsonify
 import requests
-from app import database
-from app.models.models import User
-from app.utils.email_utils import generate_verification_token, send_verification_email, decode_verification_token
+from backend.app import database
+from backend.app.models.models import User
+from backend.app.utils.email_utils import generate_verification_token, send_verification_email, decode_verification_token
 
 
 auth_blueprint= Blueprint('auth', __name__)
@@ -47,6 +47,8 @@ def register():
     username= data.get('username')
     email= data.get('email')
     password= data.get('password')
+
+    # adding reCAPTCHA for added security against possible automated bot attack
     recaptcha_response= data.get('recaptcha_response')
 
     user_exists= User.query.filter_by(email=email).first()
@@ -77,6 +79,15 @@ def login():
     email= data.get('email')
     password= data.get('password')
 
+    # reCAPTCHA for added verification
+    recaptcha_response= data.get('recaptcha_response')
+
+    # verify reCAPTCHA
+    recaptcha_result= verify_recaptcha(recaptcha_response)
+    if not recaptcha_result.get('success'):
+        return jsonify({'message':'Invalid reCAPTCHA. Please try again.'}), 400
+
+    # verify user credentials against database
     user= User.query.filter_by(email=email).first()
     if not user:
         return jsonify({'message':'Email does not exist!'}), 401
@@ -84,7 +95,7 @@ def login():
     if not user.check_password(password):
         return jsonify({'message':'Password incorrect!'}), 401
 
-    # generate token
+    # generate token if user credentials exist in database
     payload= {
         'user_id': user.id,
         'exp': datetime.now(timezone.utc)+ timedelta(hours=1)

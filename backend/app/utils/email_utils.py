@@ -3,7 +3,7 @@ import jwt
 from flask import url_for
 from flask_mail import Message
 from datetime import datetime, timedelta
-from app import mail
+from backend.app import mail
 
 
 # generate a verification token
