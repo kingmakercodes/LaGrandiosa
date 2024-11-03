@@ -1,7 +1,5 @@
 from functools import wraps
 from flask import request, jsonify
-from sqlalchemy.sql.functions import current_user
-
 from backend.app.models.models import User
 from flask import current_app
 import jwt
