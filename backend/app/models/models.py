@@ -1,4 +1,4 @@
-from app import database
+from backend.app import database
 from datetime import datetime, timezone
 from werkzeug.security import generate_password_hash, check_password_hash
 
@@ -97,7 +97,7 @@ class Cart(database.Model):
 
     # model relationships
     user= database.relationship('User', back_populates='cart')
-    items= database.relationship('CartItem', back_populates='cart')
+    items= database.relationship('CartItem', back_populates='cart', cascade='all, delete-orphan')
 
 
 # cart item model
