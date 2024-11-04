@@ -13,7 +13,8 @@ def fetch_token():
 
     if not token:
         return None, jsonify({'message':'Token is missing!'}), 403
-    return token, None, None
+
+    return token, None, None # should return token, error response, status code
 
 
 # function to verify token
@@ -25,9 +26,11 @@ def verify_token(token):
         if not current_user:
             raise jwt.InvalidTokenError('User does not exist!')
         return current_user, None, None
+
     except jwt.ExpiredSignatureError:
         return None, jsonify({'message':'Token has expired!'}), 403
     except jwt.InvalidTokenError:
+
         return None, jsonify({'message':'Invalid token!'}), 403
 
 
@@ -55,10 +58,12 @@ def token_required(f):
 
 # reCAPTCHA verification logic
 def verify_recaptcha(recaptcha_response):
+
     # verification using Google's API
     secret_key= current_app.config['RECAPTCHA_SECRET_KEY']
     verification_url= current_app.config['RECAPTCHA_VERIFICATION_URL']
 
     payload= {'secret': secret_key, 'response': recaptcha_response}
     response= requests.post(verification_url, data=payload)
+
     return response.json()

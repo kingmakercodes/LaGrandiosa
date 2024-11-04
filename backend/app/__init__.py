@@ -32,7 +32,9 @@ def create_app():
 
     # register blueprints
     from backend.app.views.auth import auth_blueprint
+    from backend.app.views.cart import cart_blueprint
     app.register_blueprint(auth_blueprint)
+    app.register_blueprint(cart_blueprint)
 
     with app.app_context():
         # import routes and models here
